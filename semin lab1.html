@@ -1,0 +1,255 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Travel Ticket Booking</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #eaf2f8;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            max-width: 400px;
+            margin: 40px auto;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px #aaa;
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: #1769aa;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0 15px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 8px;
+            background: #1769aa;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #0b4778;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        #result {
+            margin-top: 20px;
+            padding: 12px;
+            background: #e0f5e5;
+            border-radius: 5px;
+            overflow-wrap: anywhere;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Login Page -->
+    <div class="container" id="loginPage">
+
+        <h1>Travel Booking</h1>
+        <h2>Login Page</h2>
+
+        <label>Username</label>
+        <input type="text" id="username"
+               placeholder="Enter username">
+
+        <label>Password</label>
+        <input type="password" id="password"
+               placeholder="Enter password">
+
+        <button onclick="login()">Login</button>
+
+        <p id="message"></p>
+
+        <p style="text-align:center">
+            Username: admin<br>
+            Password: 1234
+        </p>
+
+    </div>
+
+    <!-- Ticket Booking Page -->
+    <div class="container hidden" id="bookingPage">
+
+        <h1>Travel Booking</h1>
+        <h2>Book Your Ticket</h2>
+
+        <label>Source</label>
+        <select id="source">
+            <option>Hyderabad</option>
+            <option>Vijayawada</option>
+            <option>Visakhapatnam</option>
+            <option>Srikakulam</option>
+        </select>
+
+        <label>Destination</label>
+        <select id="destination">
+            <option>Visakhapatnam</option>
+            <option>Hyderabad</option>
+            <option>Vijayawada</option>
+            <option>Srikakulam</option>
+        </select>
+
+        <label>Travel Date</label>
+        <input type="date" id="date">
+
+        <label>Number of Passengers</label>
+        <input type="number" id="passengers"
+               min="1" max="10" value="1">
+
+        <label>Travel Type</label>
+        <select id="type">
+            <option value="Bus">Bus - Rs.500</option>
+            <option value="Train">Train - Rs.300</option>
+        </select>
+
+        <button onclick="bookTicket()">Book Ticket</button>
+        <button onclick="logout()">Logout</button>
+
+        <div id="result" class="hidden"></div>
+
+    </div>
+
+    <script>
+        // Login Function
+        function login() {
+            let user =
+                document.getElementById("username").value;
+
+            let pass =
+                document.getElementById("password").value;
+
+            if (user === "admin" && pass === "1234") {
+
+                document.getElementById("loginPage")
+                    .classList.add("hidden");
+
+                document.getElementById("bookingPage")
+                    .classList.remove("hidden");
+
+                document.getElementById("message").innerHTML = "";
+
+                // Prevent selecting a past date
+                let today = new Date();
+                let year = today.getFullYear();
+                let month = String(today.getMonth() + 1).padStart(2, "0");
+                let day = String(today.getDate()).padStart(2, "0");
+                let minDate = year + "-" + month + "-" + day;
+
+                document.getElementById("date").min = minDate;
+                document.getElementById("date").value = minDate;
+
+            } else {
+                document.getElementById("message").innerHTML =
+                    "Invalid username or password!";
+                document.getElementById("message").style.color = "red";
+            }
+        }
+
+        // Ticket Booking Function
+        function bookTicket() {
+            let source =
+                document.getElementById("source").value;
+
+            let destination =
+                document.getElementById("destination").value;
+
+            let date =
+                document.getElementById("date").value;
+
+            let passengers =
+                Number(document.getElementById("passengers").value);
+
+            let type =
+                document.getElementById("type").value;
+
+            if (source === destination) {
+                alert("Source and destination cannot be the same!");
+                return;
+            }
+
+            let today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            let selectedDate = new Date(date + "T00:00:00");
+
+            if (!date || selectedDate < today) {
+                alert("Please select today or a future date!");
+                return;
+            }
+
+            if (!Number.isInteger(passengers) ||
+                passengers < 1 || passengers > 10) {
+                alert("Enter between 1 and 10 passengers!");
+                return;
+            }
+
+            let fare;
+
+            if (type === "Bus") {
+                fare = 500;
+            } else {
+                fare = 300;
+            }
+
+            let total = fare * passengers;
+            let bookingId = "TB" + Date.now();
+
+            document.getElementById("result").classList.remove("hidden");
+
+            document.getElementById("result").innerHTML =
+                "<h3>Ticket Booked Successfully!</h3>" +
+                "<p><b>Booking ID:</b> " + bookingId + "</p>" +
+                "<p><b>Source:</b> " + source + "</p>" +
+                "<p><b>Destination:</b> " + destination + "</p>" +
+                "<p><b>Travel Date:</b> " + date + "</p>" +
+                "<p><b>Passengers:</b> " + passengers + "</p>" +
+                "<p><b>Travel Type:</b> " + type + "</p>" +
+                "<p><b>Total Fare:</b> Rs. " + total + "</p>";
+        }
+
+        // Logout Function
+        function logout() {
+            document.getElementById("bookingPage")
+                .classList.add("hidden");
+
+            document.getElementById("loginPage")
+                .classList.remove("hidden");
+
+            document.getElementById("username").value = "";
+            document.getElementById("password").value = "";
+
+            document.getElementById("result").classList.add("hidden");
+            document.getElementById("result").innerHTML = "";
+        }
+    </script>
+
+</body>
+</html>
